@@ -611,7 +611,9 @@ def init_app_routes(app):
     @app.route('/profile-test')
     @login_required
     def profile_test():
-        return render_template('profile_test.html', username=current_user.username)
+        nav = render_template('components/nav_logged_in.html') if current_user.is_authenticated else render_template('components/nav_logged_out.html')
+        return render_template('profile_debug.html', page_name='Profile', nav=nav)
+
 
 
 
