@@ -615,6 +615,12 @@ def init_app_routes(app):
         return render_template('profile_debug.html', page_name='Profile', nav=nav)
 
 
+    @app.route('/profile-debug')
+    @login_required
+    def profile_debug():
+        from flask_login import current_user
+        return render_template('profile_debug.html', current_user=current_user)
+
 
 
 
