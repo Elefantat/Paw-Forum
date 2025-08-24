@@ -1,10 +1,16 @@
 {% extends "base.html" %}
-
 {% block content %}
 <h1>Profile Debug Page</h1>
 
-<pre>
-{{ current_user | tojson }}
-</pre>
+<p>Username: {{ current_user.username }}</p>
+<p>Email: {{ current_user.email }}</p>
+<p>Pet Type: {{ current_user.pet_type or 'None' }}</p>
+
+{% if current_user.user_image %}
+    <img src="{{ url_for('static', filename='image/avatars/' + current_user.user_image) }}" 
+         alt="User Avatar" width="100">
+{% else %}
+    <p>No avatar set.</p>
+{% endif %}
 
 {% endblock %}
