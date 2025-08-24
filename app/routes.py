@@ -607,3 +607,12 @@ def init_app_routes(app):
             return jsonify(user_data)
         else:
             return jsonify({'error': 'User not found'})
+
+    @app.route('/profile-test')
+    @login_required
+    def profile_test():
+        return render_template('profile_test.html', username=current_user.username)
+
+
+
+
