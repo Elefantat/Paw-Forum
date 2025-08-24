@@ -144,7 +144,10 @@ def init_app_routes(app):
             current_user.phone = request.form.get('phone', current_user.phone)
             current_user.gender = request.form.get('gender', current_user.gender)
             current_user.postcode = request.form.get('postcode', current_user.postcode)
-            current_user.pet_type = request.form.get('petType', current_user.pet_type)
+
+            pet_types = request.form.getlist('petType')
+            current_user.pet_type = ','.join(pet_types) if pet_types else current_user.pet_type
+
             new_image = request.form.get('user_image')
             if new_image:
                 current_user.user_image = new_image
