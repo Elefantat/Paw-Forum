@@ -1,138 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
-  rel="stylesheet">
+<div class="profile-container">
+    <h1>My Profile</h1>
 
-<body class="profile-page">
-  <div class="profile-container">
-    <div class="profile-content">
-      <h1>My Profile - <span>{{ current_user.username or '' }}</span></h1>
-      <form method="POST" action="{{ url_for('profile') }}">
-        <div class="form-row">
-          <label>Username 
-            <input type="text" name="username" value="{{ current_user.username or '' }}">
-          </label>
-        </div>
-        <div class="form-row">
-          <label>Gender
-            <select name="gender">
-              <option value="Male" {% if current_user.gender == 'Male' %}selected{% endif %}>Male</option>
-              <option value="Female" {% if current_user.gender == 'Female' %}selected{% endif %}>Female</option>
-              <option value="Other" {% if current_user.gender == 'Other' %}selected{% endif %}>Other</option>
-            </select>
-          </label>
-
-          <label>Post Code 
-            <input type="text" name="postcode" 
-              value="{{ current_user.postcode or '' }}" 
-              pattern="\d{4}" 
-              title="Postcode must be a 4-digit number" />
-          </label>
-        </div>
-        <div class="form-row">
-          <label>Email Address 
-            <input type="email" name="email" value="{{ current_user.email or '' }}">
-          </label>
-          <label>Phone Number 
-            <input type="tel" name="phone" 
-              value="{{ current_user.phone or '' }}" 
-              pattern="04\d{8}" 
-              title="Phone number must be in the format 04########">
-          </label>
-        </div>
-        <div class="form-row">
-          <label>Pet Type
-            <select name="petType" multiple="multiple" class="pet-type-select">
-              <option value="Dog" {% if current_user.pet_type and 'Dog' in current_user.pet_type %}selected{% endif %}>Dog</option>
-              <option value="Cat" {% if current_user.pet_type and 'Cat' in current_user.pet_type %}selected{% endif %}>Cat</option>
-              <option value="Bird" {% if current_user.pet_type and 'Bird' in current_user.pet_type %}selected{% endif %}>Bird</option>
-              <option value="Fish" {% if current_user.pet_type and 'Fish' in current_user.pet_type %}selected{% endif %}>Fish</option>
-              <option value="Reptile" {% if current_user.pet_type and 'Reptile' in current_user.pet_type %}selected{% endif %}>Reptile</option>
-              <option value="Insect" {% if current_user.pet_type and 'Insect' in current_user.pet_type %}selected{% endif %}>Insect</option>
-              <option value="Other" {% if current_user.pet_type and 'Other' in current_user.pet_type %}selected{% endif %}>Other</option>
-            </select>
-          </label>
-        </div>
-        
-        <!-- Avatar hidden field -->
-        <input type="hidden" name="user_image" id="user_image" value="{{ current_user.user_image or 'avatar1.png' }}">
-        
-        <button type="submit" class="save-btn">Save</button>
-      </form>
-      <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+    <!-- 显示用户头像 -->
+    <div class="avatar-section">
+        <img 
+            src="{{ url_for('static', filename='image/avatars/' ~ (current_user.user_image if current_user.user_image else 'avatar1.png')) }}"
+            alt="User Avatar"
+            class="avatar-img"
+        >
     </div>
-    
-    <!-- Avatar section -->
-    <div class="avatar-container">
-      <img
-        src="{{ url_for('static', filename='image/avatars/' ~ (current_user.user_image or 'avatar1.png')) }}"
-        alt="User Avatar"
-        class="avatar"
-        id="current-avatar">
-      <div id="avatar-modal" class="modal">
-        <div class="modal-content">
-          <span class="close-btn">&times;</span>
-          <table class="avatar-table">
-            {% for i in range(1, 25) %}
-              {% if loop.index0 % 4 == 0 %}
-                <tr>
-              {% endif %}
-              <td>
-                <img
-                  src="{{ url_for('static', filename='image/avatars/avatar' ~ i ~ '.png') }}"
-                  alt="Avatar {{ i }}"
-                  class="selectable-avatar">
-              </td>
-              {% if loop.index0 % 4 == 3 %}
-                </tr>
-              {% endif %}
-            {% endfor %}
-          </table>
+
+    <!-- 表单 -->
+    <form method="POST" action="{{ url_for('profile') }}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input 
+                type="text"
+                id="username"
+                name="username"
+                value="{{ current_user.username }}"
+                required
+            >
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- JS Scripts -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-  <script>
-    $(document).ready(function () {
-      $(".pet-type-select").select2({
-        placeholder: "Select pet types",
-        allowClear: true,
-      });
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input 
+                type="email"
+                id="email"
+                name="email"
+                value="{{ current_user.email }}"
+                required
+            >
+        </div>
 
-      var modal = document.getElementById("avatar-modal");
-      var avatar = document.getElementById("current-avatar");
-      var span = document.getElementsByClassName("close-btn")[0];
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input 
+                type="text"
+                id="phone"
+                name="phone"
+                value="{{ current_user.phone or '' }}"
+            >
+        </div>
 
-      avatar.onclick = function () {
-        modal.style.display = "block";
-      };
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender">
+                <option value="">-- Select --</option>
+                <option value="Male" {% if current_user.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if current_user.gender == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if current_user.gender == 'Other' %}selected{% endif %}>Other</option>
+            </select>
+        </div>
 
-      span.onclick = function () {
-        modal.style.display = "none";
-      };
+        <div class="form-group">
+            <label for="postcode">Postcode</label>
+            <input 
+                type="text"
+                id="postcode"
+                name="postcode"
+                value="{{ current_user.postcode or '' }}"
+            >
+        </div>
 
-      window.onclick = function (event) {
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      };
+        <div class="form-group">
+            <label for="petType">Pet Type</label>
+            <input
+                type="text"
+                id="petType"
+                name="petType"
+                value="{{ current_user.pet_type or '' }}"
+                placeholder="E.g. Cat, Dog"
+            >
+        </div>
 
-      $(".selectable-avatar").click(function () {
-        var selectedAvatarSrc = $(this).attr("src");
-        $("#current-avatar").attr("src", selectedAvatarSrc);
+        <!-- 隐藏字段：头像文件名 -->
+        <input 
+            type="hidden" 
+            name="user_image" 
+            id="user_image" 
+            value="{{ current_user.user_image if current_user.user_image else 'avatar1.png' }}"
+        >
 
-        var selectedAvatarFilename = selectedAvatarSrc.split('/').pop();
-        $("#user_image").val(selectedAvatarFilename);
-
-        modal.style.display = "none";
-      });
-    });
-  </script>
-</body>
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
