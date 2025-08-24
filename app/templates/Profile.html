@@ -4,13 +4,21 @@
 <div class="profile-container">
     <h1>My Profile</h1>
 
-    <!-- 显示用户头像 -->
+    <!-- 用户头像显示 -->
     <div class="avatar-section">
-        <img 
-            src="{{ url_for('static', filename='image/avatars/' ~ (current_user.user_image if current_user.user_image else 'avatar1.png')) }}"
-            alt="User Avatar"
-            class="avatar-img"
-        >
+        {% if current_user.user_image %}
+            <img 
+                src="{{ url_for('static', filename='image/avatars/' + current_user.user_image) }}"
+                alt="User Avatar"
+                class="avatar-img"
+            >
+        {% else %}
+            <img 
+                src="{{ url_for('static', filename='image/avatars/avatar1.png') }}"
+                alt="Default Avatar"
+                class="avatar-img"
+            >
+        {% endif %}
     </div>
 
     <!-- 表单 -->
@@ -83,7 +91,7 @@
             type="hidden" 
             name="user_image" 
             id="user_image" 
-            value="{{ current_user.user_image if current_user.user_image else 'avatar1.png' }}"
+            value="{{ current_user.user_image or 'avatar1.png' }}"
         >
 
         <div class="form-actions">
