@@ -6,6 +6,7 @@ from .config import Config, TestingConfig
 from .models import db
 import os
 
+
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -30,16 +31,23 @@ def create_app(config_class=Config):
         db.create_all()
 
         # Check if there's any user, if not, add demo data
-        if not User.query.first():
-            demo_user = User(username="DemoUser", email="demo@example.com", password="123456")
+        demo_user = User.query.filter_by(username="DemoUser").first()
+        if not demo_user:
+            demo_user = User(
+                username="DemoUser",
+                email="demo@example.com",
+                password="123456"
+            )
             db.session.add(demo_user)
             db.session.commit()
 
-        if not Post.query.first():
+        # Check if there's any post, if not, add a demo post
+        demo_post = Post.query.filter_by(title="Welcome to Paw Forum!").first()
+        if not demo_post:
             demo_post = Post(
                 title="Welcome to Paw Forum!",
-                body="This is your first demo post!",
-                user_id=demo_user.id
+                content="This is your first demo post!",
+                created_by=demo_user.id
             )
             db.session.add(demo_post)
             db.session.commit()
