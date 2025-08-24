@@ -8,16 +8,12 @@
 <div class="profile-container">
   <div class="profile-content">
     <h1>My Profile - <span>{{ current_user.username }}</span></h1>
-
     <form method="POST" action="{{ url_for('profile') }}">
-      <!-- Username -->
       <div class="form-row">
         <label>Username
           <input type="text" name="username" value="{{ current_user.username }}">
         </label>
       </div>
-
-      <!-- Gender + Postcode -->
       <div class="form-row">
         <label>Gender
           <select name="gender">
@@ -28,23 +24,19 @@
         </label>
 
         <label>Post Code
-          <input type="text" name="postcode" value="{{ current_user.postcode }}"
-            pattern="\d{4}" title="Postcode must be a 4-digit number">
+          <input type="text" name="postcode" value="{{ current_user.postcode }}" pattern="\d{4}" title="Postcode must be 4 digits">
         </label>
       </div>
 
-      <!-- Email + Phone -->
       <div class="form-row">
         <label>Email Address
           <input type="email" name="email" value="{{ current_user.email }}">
         </label>
         <label>Phone Number
-          <input type="tel" name="phone" value="{{ current_user.phone }}"
-            pattern="04\d{8}" title="Phone number must be in the format 04########">
+          <input type="tel" name="phone" value="{{ current_user.phone }}" pattern="04\d{8}" title="Phone number must be in the format 04########">
         </label>
       </div>
 
-      <!-- Pet Types -->
       <div class="form-row">
         <label>Pet Type
           <select name="petType" multiple="multiple" class="pet-type-select">
@@ -59,25 +51,18 @@
         </label>
       </div>
 
-      <!-- Hidden avatar value -->
       <input type="hidden" name="user_image" id="user_image" value="{{ current_user.user_image }}">
-
-      <!-- Submit button -->
       <button type="submit" class="save-btn">Save</button>
     </form>
-
     <a href="{{ url_for('logout') }}" class="logout">Logout</a>
   </div>
 
-  <!-- Avatar picker -->
   <div class="avatar-container">
     <img
       src="{{ url_for('static', filename='image/avatars/' + (current_user.user_image or 'avatar1.png')) }}"
       alt="User Avatar"
       class="avatar"
       id="current-avatar">
-
-    <!-- Modal -->
     <div id="avatar-modal" class="modal">
       <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -102,18 +87,15 @@
   </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script>
   $(document).ready(function () {
-
     $(".pet-type-select").select2({
       placeholder: "Select pet types",
       allowClear: true,
     });
 
-    // Avatar modal
     var modal = document.getElementById("avatar-modal");
     var avatar = document.getElementById("current-avatar");
     var span = document.getElementsByClassName("close-btn")[0];
@@ -121,15 +103,16 @@
     avatar.onclick = function () {
       modal.style.display = "block";
     };
+
     span.onclick = function () {
       modal.style.display = "none";
     };
+
     window.onclick = function (event) {
       if (event.target == modal) {
         modal.style.display = "none";
       }
     };
-
 
     $(".selectable-avatar").click(function () {
       var selectedAvatarSrc = $(this).attr("src");
