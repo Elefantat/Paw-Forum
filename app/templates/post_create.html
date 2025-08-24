@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends "base.html" %}
+
+{% block content %}
+<div class="CreatePost">
+    <h1>Create Post</h1>
+    <form method="POST" action="{{ url_for('post_create') }}" enctype="multipart/form-data" onsubmit="return validateTagSelection();">
+        <div class="PostTitle">
+            <h2>Post Title</h2>
+            <textarea
+                id="title"
+                name="title"
+                placeholder="20 words maximum"
+                required
+                maxlength="20"
+            ></textarea>
+        </div>
+        <h2>Add Post Category</h2>
+        <div class="tags">
+            <input type="radio" id="tag1" name="category" value="Daily" required>
+            <label for="tag1" class="tag">Daily</label>
+            <input type="radio" id="tag2" name="category" value="PetSitting">
+            <label for="tag2" class="tag">PetSitting</label>
+            <input type="radio" id="tag3" name="category" value="Adoption">
+            <label for="tag3" class="tag">Adoption</label>
+        </div>
+        <div class="Postbody">
+            <label>Post Content</label>
+            <textarea
+                id="body"
+                name="content"
+                rows="10"
+                placeholder="Enter your post content here. 1000 words maximum"
+                required
+                maxlength="1000"
+            ></textarea>
+        </div>
+        <h2>Add Images</h2>
+        <div class="AddImage">
+            <input type="file" name="image" accept="image/*">
+        </div>
+        <h2>Task - Assign as task to allow for application</h2>
+        <div class="Task">
+            <input type="checkbox" id="checkbox" name="is_task">
+            <label for="checkbox">Task</label>
+        </div>
+        <div class="PostSubmit">
+            <button type="submit" class="PostSubmitbtn">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function validateTagSelection() {
+    const tags = document.getElementsByName('category');
+    let isTagSelected = false;
+   
+    for (let i = 0; i < tags.length; i++) {
+        if (tags[i].checked) {
+            isTagSelected = true;
+            break;
+        }
+    }
+   
+    if (!isTagSelected) {
+        alert('Please select a tag.');
+        return false;  
+    }
+   
+    return true;  
+  }
+</script>
+{% endblock %}
+
+</body>
+</html>

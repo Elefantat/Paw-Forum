@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+<div class="forum-container">
+  {% if post.is_task %}
+  <div class="user-list-container">
+    <div class="user-list">
+      <button
+        type="button"
+        id="action-button"
+        class="action-button"
+        {%
+        if
+        user_has_applied
+        %}disabled{%
+        endif
+        %}
+      >
+        {% if user_has_applied %}Applied{% else %}Apply{% endif %}
+      </button>
+
+      {% for waiting_user in post.waiting_list_entries %}
+      <div class="user" username="{{ waiting_user.user.username }}">
+        <img
+          src="{{ url_for('static', filename='image/avatars/' ~ waiting_user.user.user_image) }}"
+          alt="User Avatar"
+          class="user-avatar">
+        <span class="user-username">{{ waiting_user.user.username }}</span>
+      </div>
+      {% endfor %} {% endif %}
+    </div>
+  </div>
+
+  <!-- User info popup -->
+  <div id="user-info-popup" class="user-info-popup">
+    <div class="popup-content">
+      <span class="close-popup">&times;</span>
+      {% if current_user.id == post.created_by %}
+      <p><strong>Username:</strong> <span id="popup-username"></span></p>
+      <p><strong>Email:</strong> <span id="popup-email"></span></p>
+      <p><strong>Phone:</strong> <span id="popup-phone"></span></p>
+      <p><strong>Gender:</strong> <span id="popup-gender"></span></p>
+      <p><strong>Postcode:</strong> <span id="popup-postcode"></span></p>
+    {% endif %}
+    </div>
+  </div>
+
+  <div id="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %} {% endif %} {% endwith %}
+  </div>
+
+  {% endblock %}
+   {% block scripts %}
+  <script>
+    /* Task function*/
+    //Add username and avatar to task list
+    document.addEventListener("DOMContentLoaded", function () {
+      const actionButton = document.getElementById("action-button");
+      const userListContainer = document.querySelector(".user-list");
+      actionButton.addEventListener("click", function () {
+        if (!actionButton.disabled) {
+          const currentUserUsername = "{{ current_user.username }}";
+          const currentUserAvatar = "{{ current_user.user_image }}";
+
+          const newUserElement = document.createElement("div");
+          newUserElement.className = "user";
+          newUserElement.setAttribute("username", currentUserUsername);
+
+          const avatarElement = document.createElement("img");
+          avatarElement.src = currentUserAvatar;
+          avatarElement.alt = "User Avatar";
+          avatarElement.className = "user-avatar";
+
+          const usernameElement = document.createElement("span");
+          usernameElement.className = "user-username";
+          usernameElement.textContent = currentUserUsername;
+          newUserElement.appendChild(avatarElement);
+          newUserElement.appendChild(usernameElement);
+          userListContainer.appendChild(newUserElement);
+
+          actionButton.disabled = true;
+          actionButton.style.backgroundColor = "grey";
+          actionButton.innerText = "Applied";
+        }
+      });
+    });
+
+    /* Delete function*/
+    document.addEventListener("DOMContentLoaded", function () {
+      var deleteReplyModal = document.getElementById("deleteReplyModal");
+      var deleteReplyIcons = document.querySelectorAll(".delete-reply");
+      var closeReplyModalBtn =
+        deleteReplyModal.getElementsByClassName("close-btn")[0];
+      var confirmDeleteReply = document.getElementById("confirmDeleteReply");
+      var cancelDeleteReply = document.getElementById("cancelDeleteReply");
+      var replyToDeleteId = null;
+
+      deleteReplyIcons.forEach(function (icon) {
+        icon.addEventListener("click", function () {
+          replyToDeleteId = this.getAttribute("data-reply-id");
+          deleteReplyModal.style.display = "block";
+        });
+      });
+
+      if (closeReplyModalBtn) {
+        closeReplyModalBtn.onclick = function () {
+          deleteReplyModal.style.display = "none";
+        };
+      }
+
+      cancelDeleteReply.onclick = function () {
+        deleteReplyModal.style.display = "none";
+      };
+
+      confirmDeleteReply.onclick = function () {
+        fetch(`/delete_reply/${replyToDeleteId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("Reply deleted successfully.");
+              window.location.reload();
+            } else {
+              return response.json().then((data) => {
+                alert("Error: " + data.error);
+                deleteReplyModal.style.display = "none";
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Error deleting reply.");
+            deleteReplyModal.style.display = "none";
+          });
+      };
+
+      window.onclick = function (event) {
+        if (event.target == deleteReplyModal) {
+          deleteReplyModal.style.display = "none";
+        }
+      };
+       
+      var replyButtons = document.querySelectorAll(".reply-button");
+      replyButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var replyId = this.getAttribute("data-reply-id");
+          var nestedReplyForm = document.querySelector(
+            `.nested-reply-form[data-reply-id='${replyId}']`
+          );
+          if (nestedReplyForm) {
+            nestedReplyForm.style.display = "block";
+          }
+        });
+      });
+    });
+
+    document.addEventListener("DOMContentLoaded", (event) => {
+      document
+        .getElementById("action-button")
+        .addEventListener("click", function () {
+          const postId = "{{ post.id }}";  
+
+          fetch(`/apply_task/${postId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ post_id: postId }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.success) {
+                location.reload();  
+              } else {
+                const flashContainer =
+                  document.getElementById("flash-container");
+                const errorMessage = document.createElement("div");
+                errorMessage.classList.add("flash", "flash-error");
+                errorMessage.innerText = data.error;
+                flashContainer.appendChild(errorMessage);
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+    });
+  </script>
+  <script src="{{ url_for('static', filename='js/user_info_popup.js') }}"></script>
+  {% endblock %}
+</div>
+</body>
+</html>

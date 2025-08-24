@@ -1,0 +1,19 @@
+# Environments
+venv
+
+# ignore
+.idea/
+
+
+# Log File for run.sh
+run.log
+
+# Output Files
+__pycache__/
+
+# Mac OS X
+.DS_Store
+
+# ignore app.db
+#*.db
+

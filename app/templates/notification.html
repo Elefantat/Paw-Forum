@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  </html>{% extends "base.html" %} {% block content %}
+<div class="notification">
+  <div style="display: flex; justify-content: center; margin: 20px">
+    <div style="flex: 1; max-width: 800px">
+      <h2>Notifications</h2>
+      <ul style="list-style-type: none; padding: 0">
+        {% for notification in notifications %} 
+          {% if notification.target_user_id == current_user.id %}
+          <li style="border-bottom: 1px solid #ccc; padding: 10px 0">
+            <span style="color: #666; font-size: 0.9em">
+              {{ notification.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+            </span>
+            - {{ notification.user.username }} {{ notification.action }} you.
+          </li>
+          {% endif %} 
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+</body>
+
